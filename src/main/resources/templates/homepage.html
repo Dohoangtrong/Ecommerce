@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách sản phẩm</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="#">Trang chủ</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="http://localhost:8080/cart">
+                        <i class="fas fa-shopping-cart"></i> Giỏ hàng
+                        <span id="cartItemCount" class="badge badge-pill badge-primary" th:text="${cartItemCount}"></span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="http://localhost:8080/login">Đăng nhập</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <h1 class="mt-5 mb-5 text-center">Danh sách sản phẩm</h1>
+    <div class="row">
+        <div class="col-md-4 mb-4" th:each="item : ${items}">
+            <div class="card">
+                <!-- Hình ảnh sản phẩm -->
+                <img src="https://mtv.vn/uploads/2023/02/25/meo-gg.jpg" class="card-img-top" alt="Product Image" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${item.name}">Tên sản phẩm</h5>
+                    <p class="card-text" text="hay">Mô tả sản phẩm</p>
+                    <p class="card-text text-danger font-weight-bold" th:text="${item.price} + ' đ'">Giá sản phẩm</p>
+                    <!-- Form thêm vào giỏ hàng -->
+                    <form id="addToCartForm" th:action="@{/cart/add}" method="post">
+                        <input type="hidden" name="itemId" th:value="${item.id}"/>
+                        <input type="hidden" name="quantity" value="1"/>
+                        <button type="submit" class="btn btn-primary">Thêm vào giỏ hàng</button>
+                    </form>
+
+                    <a href="#" class="btn btn-danger">Xóa</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+<script>
+    $(document).ready(function(){
+        $("form#addToCartForm").submit(function(e){
+            e.preventDefault();
+            var form = $(this);
+            var formData = form.serialize();
+            $.ajax({
+                type: "POST",
+                url: form.attr("action"),
+                data: formData,
+                success: function(response){
+                    alert("Đã thêm sản phẩm vào giỏ hàng!");
+                    $("#cartItemCount").text(response);
+                },
+                error: function(){
+                    alert("Có lỗi xảy ra, vui lòng thử lại.");
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
