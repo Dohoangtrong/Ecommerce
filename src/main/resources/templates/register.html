@@ -2,26 +2,116 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Register</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .register-container {
+            background-color: #ffffff;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .register-container h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .register-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+            text-align: left;
+        }
+
+        .register-container input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .register-container button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        .register-container button:hover {
+            background-color: #0056b3;
+        }
+
+        .register-container .links {
+            margin-top: 15px;
+        }
+
+        .register-container .links a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .register-container .links a:hover {
+            text-decoration: underline;
+        }
+
+        .btn-home {
+            margin-top: 20px;
+            display: inline-block;
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .btn-home:hover {
+            background-color: #218838;
+        }
+    </style>
 </head>
 <body>
-<h1>Register</h1>
-<form th:action="@{/register}" th:object="${customer}" method="post">
-    <label for="username">Username:</label>
-    <input type="text" id="username" th:field="*{username}" required/><br/>
+<div class="register-container">
+    <h1>Register</h1>
+    <form th:action="@{/register}" th:object="${customer}" method="post">
+        <label for="username">Username</label>
+        <input type="text" id="username" th:field="*{username}" required/>
 
-    <label for="password">Password:</label>
-    <input type="password" id="password" th:field="*{password}" required/><br/>
+        <label for="password">Password</label>
+        <input type="password" id="password" th:field="*{password}" required/>
 
-    <label for="email">Email:</label>
-    <input type="email" id="email" th:field="*{email}" required/><br/>
+        <label for="email">Email</label>
+        <input type="email" id="email" th:field="*{email}" required/>
 
-    <button type="submit">Register</button>
-</form>
-<div>
-    <a href="/login">Already have an account? Login here</a>
-</div>
-<div>
-    <a href="/" class="btn btn-home">HomePage</a>
+        <button type="submit">Register</button>
+    </form>
+    <div class="links">
+        <a href="/login">Already have an account? Login here</a>
+    </div>
+    <a href="/" class="btn-home">HomePage</a>
 </div>
 </body>
 </html>

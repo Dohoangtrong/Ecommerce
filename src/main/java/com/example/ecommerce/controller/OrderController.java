@@ -1,57 +1,87 @@
 package com.example.ecommerce.controller;
 
+import com.example.ecommerce.entity.Cart;
+import com.example.ecommerce.entity.CartItem;
+import com.example.ecommerce.entity.Customer;
 import com.example.ecommerce.entity.Order;
+import com.example.ecommerce.repository.CartItemRepository;
+import com.example.ecommerce.repository.CartRepository;
 import com.example.ecommerce.service.OrderService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("/orders")
 public class OrderController {
 
     @Autowired
     private OrderService orderService;
 
-    @GetMapping
-    public List<Order> getAllOrders() {
-        return orderService.getAllOrders();
+    @Autowired
+    private CartRepository cartRepository;
+
+    @Autowired
+    private CartItemRepository cartItemRepository;
+
+    @GetMapping("/")
+    public String getAllOrders(Model model, HttpSession session) {
+        Customer loggedInUser = (Customer) session.getAttribute("loggedInUser");
+        if (loggedInUser != null) {
+            Cart cart = cartRepository.findByCustomerId(loggedInUser.getId());
+            List<CartItem> cartItems = cartItemRepository.findByCart(cart);
+            model.addAttribute("cartItems", cartItems);
+
+            double totalPrice = cartItems.stream()
+                    .mapToDouble(item -> item.getItem().getPrice() * item.getQuantity())
+                    .sum();
+            model.addAttribute("totalPrice", totalPrice);
+
+            List<Order> orders = orderService.getAllOrders();
+            model.addAttribute("orders", orders);
+
+            model.addAttribute("customer", loggedInUser);
+        }else{
+            return "redirect:/login";
+        }
+        return "order";
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
+    public String getOrderById(@PathVariable Long id, Model model) {
         Order order = orderService.getOrderById(id);
         if (order != null) {
-            return ResponseEntity.ok(order);
+            model.addAttribute("order", order);
+            return "orderDetail";
         } else {
-            return ResponseEntity.notFound().build();
+            return "redirect:/orders";
         }
     }
 
     @PostMapping
-    public Order createOrder(@RequestBody Order order) {
-        return orderService.createOrder(order);
+    public String createOrder(@ModelAttribute Order order) {
+        orderService.createOrder(order);
+        return "redirect:/orders";
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Order> updateOrder(@PathVariable Long id, @RequestBody Order orderDetails) {
+    @PostMapping("/{id}/update")
+    public String updateOrder(@PathVariable Long id, @ModelAttribute Order orderDetails) {
         Order updatedOrder = orderService.updateOrder(id, orderDetails);
         if (updatedOrder != null) {
-            return ResponseEntity.ok(updatedOrder);
+            return "redirect:/orders";
         } else {
-            return ResponseEntity.notFound().build();
+            return "redirect:/orders";
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
+    @PostMapping("/{id}/delete")
+    public String deleteOrder(@PathVariable Long id) {
         boolean deleted = orderService.deleteOrder(id);
-        if (deleted) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return "redirect:/orders";
     }
 }
+

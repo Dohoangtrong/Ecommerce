@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh Toán & Giao Hàng</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 1em;
+            font-family: Arial, sans-serif;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        thead tr {
+            background-color: #009879;
+            color: #ffffff;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #dddddd;
+            text-align: center;
+        }
+
+        tbody tr:nth-of-type(even) {
+            background-color: #f3f3f3;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .product-image {
+            width: 80px;
+            height: auto;
+            border-radius: 5px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Xác Nhận Đơn Hàng</h1>
+
+    <h3 class="mt-4">Thông Tin Khách Hàng</h3>
+    <div class="customer-info mb-4">
+        <p><strong>Họ và tên:</strong> <span th:text="${customer.name}"></span></p>
+        <p><strong>Email:</strong> <span th:text="${customer.email}"></span></p>
+        <p><strong>Phone:</strong> <span th:text="${customer.phone}"></span></p>
+        <p><strong>Address:</strong> <span th:text="${customer.address}"></span></p>
+    </div>
+
+    <h3 class="mt-5">Danh Sách Sản Phẩm</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>Image</th>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${cartItems}">
+            <td><img src="https://mtv.vn/uploads/2023/02/25/meo-gg.jpg" alt="Product Image" class="product-image"></td>
+            <td th:text="${item.item.name}"></td>
+            <td th:text="${item.item.price}"></td>
+            <td th:text="${item.quantity}"></td>
+            <td th:text="${item.item.price * item.quantity}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-end mt-4">
+        <h4 class="me-3">Tổng cộng:</h4>
+        <h4 th:text="${totalPrice}"></h4>
+    </div>
+
+    <form th:action="@{/orders}" method="post">
+        <h3 class="mt-4">Thanh Toán</h3>
+        <div class="mb-3">
+            <label for="paymentMethod" class="form-label">Phương thức thanh toán</label>
+            <select class="form-select" id="paymentMethod" name="paymentMethod" required onchange="handlePaymentMethodChange()">
+                <option value="credit_card">Thẻ tín dụng</option>
+                <option value="bank_transfer">Chuyển khoản ngân hàng</option>
+                <option value="cod">Thanh toán khi nhận hàng (COD)</option>
+            </select>
+        </div>
+
+        <div class="mb-3" id="creditCardSection" style="display: none;">
+            <label for="cardNumber" class="form-label">Số thẻ (nếu thanh toán qua thẻ)</label>
+            <input type="text" class="form-control" id="cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456">
+        </div>
+
+        <div class="mb-3" id="bankTransferSection" style="display: none;">
+            <label class="form-label">Quét mã QR để chuyển khoản</label>
+            <img src="path/to/your/qr-code.png" alt="QR Code" class="img-fluid">
+        </div>
+
+        <h3 class="mt-4">Thông Tin Giao Hàng</h3>
+        <div class="mb-3">
+            <label for="shippingAddress" class="form-label">Địa chỉ giao hàng</label>
+            <input type="text" class="form-control" id="shippingAddress" name="shippingAddress" placeholder="123 Đường ABC, Phường DEF, TP HCM" required>
+        </div>
+        <div class="mb-3">
+            <label id="deliveryDateLabel" class="form-label">Ngày giao hàng dự kiến:</label>
+        </div>
+        <div class="mb-3">
+            <label for="note" class="form-label">Ghi chú</label>
+            <textarea class="form-control" id="note" name="note" rows="3" placeholder="Ghi chú đặc biệt cho đơn hàng..."></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success mt-4">Đặt Hàng</button>
+    </form>
+</div>
+
+<script>
+    function handlePaymentMethodChange() {
+        const paymentMethod = document.getElementById("paymentMethod").value;
+        const creditCardSection = document.getElementById("creditCardSection");
+        const bankTransferSection = document.getElementById("bankTransferSection");
+
+        creditCardSection.style.display = "none";
+        bankTransferSection.style.display = "none";
+
+        if (paymentMethod === "credit_card") {
+            creditCardSection.style.display = "block";
+        } else if (paymentMethod === "bank_transfer") {
+            bankTransferSection.style.display = "block";
+        }
+    }
+    const today = new Date();
+    const deliveryDate = new Date(today);
+    deliveryDate.setDate(today.getDate() + 4);
+
+    const day = String(deliveryDate.getDate()).padStart(2, '0');
+    const month = String(deliveryDate.getMonth() + 1).padStart(2, '0');
+    const year = deliveryDate.getFullYear();
+    const formattedDate = `${day}/${month}/${year}`;
+
+    document.getElementById("deliveryDateLabel").textContent = `Ngày giao hàng dự kiến: ${formattedDate}`;
+</script>
+</body>
+</html>

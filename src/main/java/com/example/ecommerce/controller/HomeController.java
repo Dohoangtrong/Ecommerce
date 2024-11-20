@@ -1,11 +1,8 @@
 package com.example.ecommerce.controller;
 
-import com.example.ecommerce.entity.Cart;
-import com.example.ecommerce.entity.CartItem;
-import com.example.ecommerce.entity.Customer;
-import com.example.ecommerce.entity.Item;
-import com.example.ecommerce.repository.CartItemRepository;
+import com.example.ecommerce.entity.*;
 import com.example.ecommerce.repository.CartRepository;
+import com.example.ecommerce.service.CategoryService;
 import com.example.ecommerce.service.ItemService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +19,19 @@ public class HomeController {
     private ItemService itemService;
 
     @Autowired
-    private CartItemRepository cartItemRepository;
+    private CategoryService categoryService;
 
     @Autowired
     private CartRepository cartRepository;
+
 
     @GetMapping("/")
     public String showHomePage(Model model, HttpSession session) {
         Customer loggedInUser = (Customer) session.getAttribute("loggedInUser");
         List<Item> items = itemService.getAllItems();
         model.addAttribute("items", items);
+
+        List<Category> categories = categoryService.getAllCategories();
 
         int cartItemCount = 0;
 
@@ -48,6 +48,7 @@ public class HomeController {
             }
         }
         model.addAttribute("cartItemCount", cartItemCount);
+        model.addAttribute("categories", categories);
 
         return loggedInUser != null ? "home" : "homepage";
     }

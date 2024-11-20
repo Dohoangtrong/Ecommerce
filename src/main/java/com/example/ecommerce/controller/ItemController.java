@@ -1,5 +1,6 @@
 package com.example.ecommerce.controller;
 
+import com.example.ecommerce.entity.Category;
 import com.example.ecommerce.entity.Item;
 import com.example.ecommerce.service.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Set;
+
 import org.springframework.ui.Model;
 
 
@@ -57,4 +60,32 @@ public class ItemController {
         return deleted ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
+
+    @GetMapping("/search")
+    public String searchItems(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String categoryId,
+            Model model) {
+        if (name != null && !name.isEmpty()) {
+            if ( categoryId == null || categoryId.isEmpty() ){
+                List<Item> items = itemService.findItemsByName(name);
+                Set<Category> categories = itemService.findCategoriesByItems(items);
+                model.addAttribute("categories", categories);
+                model.addAttribute("items", items);
+            }else{
+                Set<Item> items = itemService.searchItems(name, Long.parseLong(categoryId));
+                model.addAttribute("items", items);
+            }
+        }else{
+            if ( categoryId != null && !categoryId.isEmpty() ){
+                Set<Item> items = itemService.getItemsByCategory(Long.parseLong(categoryId));
+                model.addAttribute("items", items);
+            }else{
+                return "redirect:/";
+            }
+        }
+        return "items";
+    }
+
 }

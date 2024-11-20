@@ -26,6 +26,8 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String name;
+
     @NotBlank
     @Size(min = 2, max = 50)
     private String username;
@@ -37,4 +39,7 @@ public class Customer {
     @Email
     @NotBlank
     private String email;
+
+    private String phone;
+    private String address;
 }
