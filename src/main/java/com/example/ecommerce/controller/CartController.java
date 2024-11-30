@@ -44,6 +44,7 @@ public class CartController {
             double totalPrice = cartItems.stream()
                     .mapToDouble(item -> item.getItem().getPrice() * item.getQuantity())
                     .sum();
+            totalPrice = Math.round(totalPrice * 100.0) / 100.0;
             model.addAttribute("totalPrice", totalPrice);
         } else {
 
@@ -56,6 +57,7 @@ public class CartController {
             double totalPrice = cartItems.stream()
                     .mapToDouble(item -> item.getItem().getPrice() * item.getQuantity())
                     .sum();
+            totalPrice = Math.round(totalPrice * 100.0) / 100.0;
             model.addAttribute("totalPrice", totalPrice);
         }
 
@@ -112,6 +114,78 @@ public class CartController {
         }
 
         return ResponseEntity.ok(cartItemCount);
+    }
+
+    @PostMapping("/cart/increase")
+    public String increaseCart(@RequestParam("itemId") Long itemId, HttpSession session) {
+        Customer loggedInUser = (Customer) session.getAttribute("loggedInUser");
+
+        if (loggedInUser != null) {
+
+            Cart cart = cartRepository.findByCustomerId(loggedInUser.getId());
+            Item item = itemRepository.findById(itemId).orElse(null);
+
+            if (cart != null && item != null) {
+                CartItem cartItem = cartItemRepository.findByCartAndItem(cart, item);
+                if (cartItem != null) {
+                    cartItem.setQuantity(cartItem.getQuantity() + 1);
+                    cartItemRepository.save(cartItem);
+                }
+            }
+        } else {
+            List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
+            if (cart == null) {
+                cart = new ArrayList<>();
+            }
+
+            for (CartItem cartItem : cart) {
+                if (cartItem.getItem().getId().equals(itemId)) {
+                    cartItem.setQuantity(cartItem.getQuantity() + 1);
+                    break;
+                }
+            }
+            session.setAttribute("cart", cart);
+        }
+
+        return "redirect:/cart";
+    }
+
+    @PostMapping("/cart/decrease")
+    public String decreaseCart(@RequestParam("itemId") Long itemId, HttpSession session) {
+        Customer loggedInUser = (Customer) session.getAttribute("loggedInUser");
+
+        if (loggedInUser != null) {
+
+            Cart cart = cartRepository.findByCustomerId(loggedInUser.getId());
+            Item item = itemRepository.findById(itemId).orElse(null);
+
+            if (cart != null && item != null) {
+                CartItem cartItem = cartItemRepository.findByCartAndItem(cart, item);
+                if (cartItem != null) {
+                    cartItem.setQuantity(cartItem.getQuantity() - 1);
+                    if ( cartItem.getQuantity() == 0 )
+                        cartItemRepository.delete(cartItem);
+                    else
+                        cartItemRepository.save(cartItem);
+
+                }
+            }
+        } else {
+            List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
+            if (cart == null) {
+                cart = new ArrayList<>();
+            }
+
+            for (CartItem cartItem : cart) {
+                if (cartItem.getItem().getId().equals(itemId)) {
+                    cartItem.setQuantity(cartItem.getQuantity() - 1);
+                    break;
+                }
+            }
+            session.setAttribute("cart", cart);
+        }
+
+        return "redirect:/cart";
     }
 
 

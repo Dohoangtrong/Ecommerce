@@ -33,6 +33,7 @@
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" href="#">Trang cá nhân</a>
+                        <a class="dropdown-item" href="http://localhost:8080/orders/history">Lịch sử mua hàng</a>
                         <a class="dropdown-item" href="http://localhost:8080/logout">Đăng xuất</a>
                     </div>
                 </li>
@@ -44,22 +45,29 @@
 <div class="container">
     <!-- Thanh tìm kiếm -->
     <div class="row mt-4">
-        <div class="col-md-8 offset-md-2">
-            <form th:action="@{/items/search}" method="get" class="d-flex flex-wrap align-items-center gap-2">
-                <!-- Trường tìm kiếm theo tên sản phẩm -->
-                <input type="text" name="name" class="form-control" placeholder="Tìm kiếm sản phẩm..." required style="flex: 2; min-width: 200px;">
+        <div class="col-md-10 offset-md-1">
+            <form th:action="@{/items/search}" method="get" class="d-flex align-items-center gap-3">
+                <input
+                        type="text"
+                        name="name"
+                        class="form-control"
+                        placeholder="Tìm kiếm sản phẩm..."
+                        style="flex: 3; border-radius: 30px; padding: 10px 20px;">
 
-                <!-- Dropdown chọn danh mục -->
-                <select name="categoryId" class="form-select" style="flex: 1; min-width: 150px;">
+                <select
+                        name="categoryId"
+                        class="form-select"
+                        style="flex: 1; min-width: 180px; border-radius: 30px; padding: 10px 20px; background-color: #f8f9fa;">
                     <option value="">Chọn danh mục</option>
                     <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
                 </select>
 
-                <!-- Nút tìm kiếm theo tên -->
-                <button type="submit" name="action" value="searchByName" class="btn btn-primary" style="flex: 1; min-width: 120px;">Tìm kiếm</button>
-
-                <!-- Nút tìm kiếm theo danh mục -->
-                <button type="submit" name="action" value="searchByCategory" class="btn btn-secondary" style="flex: 1; min-width: 150px;">Tìm theo danh mục</button>
+                <button
+                        type="submit"
+                        class="btn btn-primary"
+                        style="flex: 1; min-width: 150px; border-radius: 30px;">
+                    Tìm kiếm
+                </button>
             </form>
         </div>
     </div>
@@ -71,7 +79,6 @@
     <div class="row">
         <div class="col-md-4 mb-4" th:each="item : ${items}">
             <div class="card">
-                <!-- Hình ảnh sản phẩm -->
                 <img src="https://mtv.vn/uploads/2023/02/25/meo-gg.jpg" class="card-img-top" alt="Product Image" style="height: 200px; object-fit: cover;">
                 <div class="card-body">
                     <h5 class="card-title" th:text="${item.name}">Tên sản phẩm</h5>

@@ -15,4 +15,13 @@ public class Payment {
     private String paymentMethod;
     private String paymentStatus;
 
+    public Payment() {
+    }
+
+    public Payment(Double amount, String paymentMethod, String paymentStatus) {
+        this.amount = amount;
+        this.paymentMethod = paymentMethod;
+        this.paymentStatus = paymentStatus;
+    }
+
 }

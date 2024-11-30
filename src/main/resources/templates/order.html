@@ -83,7 +83,7 @@
         <h4 th:text="${totalPrice}"></h4>
     </div>
 
-    <form th:action="@{/orders}" method="post">
+    <form th:action="@{/orders/createOrder}" method="post">
         <h3 class="mt-4">Thanh Toán</h3>
         <div class="mb-3">
             <label for="paymentMethod" class="form-label">Phương thức thanh toán</label>
@@ -93,6 +93,9 @@
                 <option value="cod">Thanh toán khi nhận hàng (COD)</option>
             </select>
         </div>
+
+        <input type="hidden" name="totalPrice" th:value="${totalPrice}">
+        <input type="hidden" name="cartId" th:value="${cartItems.get(1).getCart().idCart}">
 
         <div class="mb-3" id="creditCardSection" style="display: none;">
             <label for="cardNumber" class="form-label">Số thẻ (nếu thanh toán qua thẻ)</label>
@@ -108,6 +111,15 @@
         <div class="mb-3">
             <label for="shippingAddress" class="form-label">Địa chỉ giao hàng</label>
             <input type="text" class="form-control" id="shippingAddress" name="shippingAddress" placeholder="123 Đường ABC, Phường DEF, TP HCM" required>
+        </div>
+        <div class="mb-3">
+            <label for="deliveryMethod" class="form-label">Phương thức giao hàng</label>
+            <select class="form-select" id="deliveryMethod" name="deliveryMethod" required>
+                <option value="" disabled selected>Chọn phương thức giao hàng</option>
+                <option value="express">Giao nhanh</option>
+                <option value="drone">Drone giao hàng</option>
+                <option value="normal">Giao tiêu chuẩn</option>
+            </select>
         </div>
         <div class="mb-3">
             <label id="deliveryDateLabel" class="form-label">Ngày giao hàng dự kiến:</label>

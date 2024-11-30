@@ -2,47 +2,105 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Shopping Cart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        table th,
+        table td {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .btn-remove {
+            margin-top: 5px;
+        }
+
+        .button-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center; /* Căn giữa các nút */
+            gap: 10px; /* Tạo khoảng cách giữa các nút */
+        }
+
+        a {
+            margin-top: 20px;
+            display: inline-block;
+        }
+    </style>
 </head>
 <body>
-<h2>Shopping Cart</h2>
+<div class="container">
+    <h2 class="text-center my-4">Shopping Cart</h2>
 
-<table>
-    <thead>
-    <tr>
-        <th>Product</th>
-        <th>Price</th>
-        <th>Quantity</th>
-        <th>Total</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="item : ${cartItems}">
-        <td th:text="${item.item.name}"></td>
-        <td th:text="${item.item.price}"></td>
-        <td th:text="${item.quantity}"></td>
-        <td th:text="${item.item.price * item.quantity}"></td>
-        <td>
-            <form th:action="@{/cart/remove}" method="post">
-                <input type="hidden" name="itemId" th:value="${item.item.id}"/>
-                <button type="submit">Remove</button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
+    <table class="table table-bordered align-middle">
+        <thead class="table-dark">
+        <tr>
+            <th style="width: 40%;">Product</th>
+            <th style="width: 15%;">Price</th>
+            <th style="width: 10%;">Quantity</th>
+            <th style="width: 15%;">Total</th>
+            <th style="width: 20%;">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${cartItems}">
+            <td th:text="${item.item.name}"></td>
+            <td th:text="${item.item.price}" class="text-end"></td>
+            <td th:text="${item.quantity}" class="text-center"></td>
+            <td th:text="${item.item.price * item.quantity}" class="text-end"></td>
+            <td>
+                <div class="d-flex justify-content-center align-items-center gap-2">
+                    <!-- Nút giảm -->
+                    <form th:action="@{/cart/decrease}" method="post" class="form-action">
+                        <input type="hidden" name="itemId" th:value="${item.item.id}" />
+                        <button type="submit" class="btn btn-sm btn-outline-warning rounded-circle">
+                            <i class="bi bi-dash"></i>
+                        </button>
+                    </form>
+                    <!-- Số lượng (không phải nút) -->
+                    <span class="fw-bold px-2 text-center" style="min-width: 40px;" th:text="${item.quantity}"></span>
+                    <!-- Nút tăng -->
+                    <form th:action="@{/cart/increase}" method="post" class="form-action">
+                        <input type="hidden" name="itemId" th:value="${item.item.id}" />
+                        <button type="submit" class="btn btn-sm btn-outline-success rounded-circle">
+                            <i class="bi bi-plus"></i>
+                        </button>
+                    </form>
+                    <!-- Nút xóa -->
+                    <form th:action="@{/cart/remove}" method="post" class="form-action">
+                        <input type="hidden" name="itemId" th:value="${item.item.id}" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                            <i class="bi bi-trash"></i> Remove
+                        </button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 
-<h3>Total: <span th:text="${totalPrice}"></span></h3>
 
-<div class="button-container" style="display: flex; gap: 10px;">
-    <form th:action="@{/cart/clear}" method="post">
-        <button type="submit" class="btn btn-danger">Clear Cart</button>
-    </form>
 
-    <form th:action="@{/orders/}" method="get">
-        <button type="submit" class="btn btn-primary">Buy Now</button>
-    </form>
+    <h3 class="text-end">Total: <span th:text="${totalPrice}"></span></h3>
+
+    <div class="button-container">
+        <form th:action="@{/cart/clear}" method="post">
+            <button type="submit" class="btn btn-danger">Clear Cart</button>
+        </form>
+
+        <form th:action="@{/orders/}" method="get">
+            <button type="submit" class="btn btn-primary">Buy Now</button>
+        </form>
+    </div>
+
+    <a href="/" class="btn btn-link">Continue Shopping</a>
 </div>
 
-<a href="/">Continue Shopping</a>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

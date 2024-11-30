@@ -49,4 +49,8 @@ public class OrderService {
             return false;
         }
     }
+
+    public List<Order> getOrdersByCartId(Long cartId) {
+        return orderRepository.findByCart_IdCart(cartId);
+    }
 }

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch Sử Đơn Hàng</title>
+    <link rel="stylesheet" href="/css/style.css"> <!-- Đường dẫn đến file CSS nếu có -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Lịch Sử Đơn Hàng</h1>
+
+    <!-- Kiểm tra nếu có danh sách đơn hàng -->
+    <div th:if="${orders != null and !orders.isEmpty()}">
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+            <tr>
+                <th scope="col" class="text-center">STT</th>
+                <th scope="col" class="text-center">Mã Đơn Hàng</th>
+                <th scope="col">Địa Chỉ Giao Hàng</th>
+                <th scope="col" class="text-center">Phương Thức Giao Hàng</th>
+                <th scope="col" class="text-center">Trạng Thái Thanh Toán</th>
+                <th scope="col">Tracking Number</th>
+                <th scope="col">Chi Tiết</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Lặp qua danh sách orders -->
+            <tr th:each="order, iterStat : ${orders}">
+                <th scope="row" class="text-center" th:text="${iterStat.index + 1}"></th>
+                <td class="text-center" th:text="${order.getId()}">1</td>
+                <td th:text="${order.getShipment().getAddress()}">123 Đường ABC</td>
+                <td class="text-center" th:text="${order.getShipment().getShippingMethod()}">Giao nhanh</td>
+                <td class="text-center" th:text="${order.getPayment().getPaymentStatus()}">Thành công</td>
+                <td th:text="${order.getShipment().getTrackingNumber()}">Tracking</td>
+                <td>
+                    <!-- Thêm nút Detail -->
+                    <a th:href="@{/orders/{id}(id=${order.getId()})}" class="btn btn-primary btn-sm">Detail</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Hiển thị thông báo nếu không có đơn hàng -->
+    <div th:if="${orders == null or orders.isEmpty()}" class="text-center mt-5">
+        <h3>Không có đơn hàng nào được tìm thấy.</h3>
+        <a href="/" class="btn btn-primary mt-3">Quay lại trang chủ</a>
+    </div>
+</div>
+</body>
+</html>

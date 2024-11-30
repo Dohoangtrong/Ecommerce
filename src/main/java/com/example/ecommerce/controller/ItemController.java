@@ -3,6 +3,7 @@ package com.example.ecommerce.controller;
 import com.example.ecommerce.entity.Category;
 import com.example.ecommerce.entity.Item;
 import com.example.ecommerce.service.ItemService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,6 +65,7 @@ public class ItemController {
 
     @GetMapping("/search")
     public String searchItems(
+            HttpSession session,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String categoryId,
             Model model) {
@@ -77,6 +79,7 @@ public class ItemController {
                 Set<Item> items = itemService.searchItems(name, Long.parseLong(categoryId));
                 model.addAttribute("items", items);
             }
+            session.setAttribute("search", name );
         }else{
             if ( categoryId != null && !categoryId.isEmpty() ){
                 Set<Item> items = itemService.getItemsByCategory(Long.parseLong(categoryId));
@@ -87,5 +90,17 @@ public class ItemController {
         }
         return "items";
     }
+    @GetMapping("/search-category-and-name")
+    public String searchItems(
+            HttpSession session,
+            Model model,
+            @RequestParam(value = "categoryId", required = false) String categoryId) {
+
+        String name = session.getAttribute("search").toString();
+        Set<Item> items = itemService.searchItems(name, Long.parseLong(categoryId));
+        model.addAttribute("items", items);
+        return "items";
+    }
+
 
 }
