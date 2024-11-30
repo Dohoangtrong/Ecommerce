@@ -10,6 +10,7 @@ import com.example.ecommerce.repository.CustomerRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -60,7 +61,8 @@ public class CustomerController {
     public String login(
             @Valid @ModelAttribute("loginDto") LoginDto loginDto,
             BindingResult result,
-            HttpSession session) {
+            HttpSession session,
+            Model model) {
 
         if (result.hasErrors()) {
             return "login";
@@ -68,6 +70,8 @@ public class CustomerController {
         Customer customer = customerRepository.findByUsername(loginDto.getUsername());
         if (customer == null || !Objects.equals(loginDto.getPassword(), customer.getPassword())) {
             result.rejectValue("password", "error.loginDto", "Invalid username or password");
+            model.addAttribute("loginError", "Invalid username or password");
+
             return "login";
         }
         session.setAttribute("loggedInUser", customer);
